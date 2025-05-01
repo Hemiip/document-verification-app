@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { File, CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
+import { File as FileIcon } from "lucide-react";
 
 const ValidateDocument = ({
   documentType,
@@ -8,13 +9,13 @@ const ValidateDocument = ({
   handleFileUpload,
   performValidation,
   validationResults,
-  setValidationResults, // Assuming you have a setter for validationResults
+  setValidationResults,
   DOCUMENT_PARAMETERS,
+  isLoading,
 }) => {
   // Reset validation results when documentType changes
   useEffect(() => {
-    setValidationResults(null); // Or use [] if you want an empty array instead of null
-    // setFile(null);
+    setValidationResults(null);
   }, [documentType, setValidationResults]);
 
   return (
@@ -61,18 +62,18 @@ const ValidateDocument = ({
           <label
             className={`flex flex-col items-center px-6 py-4 rounded-lg shadow-lg tracking-wide border cursor-pointer ${
               !documentType
-                ? "bg-gray-200 text-gray-400 border-gray-300" // Disable state (gray)
+                ? "bg-gray-200 text-gray-400 border-gray-300" // Disabled state
                 : "bg-white text-blue-400 border-blue-100 hover:bg-blue-100" // Active state
             }`}
           >
-            <File
+            <FileIcon
               className={`w-8 h-8 ${
-                !documentType ? "text-gray-400" : "text-blue-400" // Adjust icon color
+                !documentType ? "text-gray-400" : "text-blue-400"
               }`}
             />
             <span
               className={`mt-2 text-base leading-normal ${
-                !documentType ? "text-gray-400" : "text-blue-400" // Adjust text color
+                !documentType ? "text-gray-400" : "text-blue-400"
               }`}
             >
               {file ? file.name : "Select a file"}
@@ -80,9 +81,9 @@ const ValidateDocument = ({
             <input
               type="file"
               className="hidden"
-              accept=".pdf" // Optional: limit to PDF only
+              accept=".pdf"
               onChange={handleFileUpload}
-              disabled={!documentType} // Disable if documentType is empty
+              disabled={!documentType}
             />
           </label>
         </div>
@@ -94,12 +95,12 @@ const ValidateDocument = ({
           disabled={!documentType || !file}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-300"
         >
-          Start Verification
+          {isLoading ? "Verification in progress..." : "Start Verification"}
         </button>
         {file && (
           <button
             onClick={() => window.open(URL.createObjectURL(file))}
-            className="border border-gray-500  text-gray-500 px-4 py-2 rounded-lg hover:bg-gray-100"
+            className="border border-gray-500 text-gray-500 px-4 py-2 rounded-lg hover:bg-gray-100"
           >
             Preview Document
           </button>
