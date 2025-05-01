@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { File, CheckCircle, XCircle } from "lucide-react";
 
 const ValidateDocument = ({
@@ -8,8 +8,15 @@ const ValidateDocument = ({
   handleFileUpload,
   performValidation,
   validationResults,
+  setValidationResults, // Assuming you have a setter for validationResults
   DOCUMENT_PARAMETERS,
 }) => {
+  // Reset validation results when documentType changes
+  useEffect(() => {
+    setValidationResults(null); // Or use [] if you want an empty array instead of null
+    // setFile(null);
+  }, [documentType, setValidationResults]);
+
   return (
     <main className="p-6 max-w-2xl mx-auto bg-white shadow-md rounded-lg my-12">
       <div className="mb-4">
@@ -25,7 +32,7 @@ const ValidateDocument = ({
             <option value="">Choose Document Type</option>
             <option value="UAT">User Acceptance Testing (UAT)</option>
             <option value="BRD">Business Requirement Document (BRD)</option>
-            <option value="SIT">System Integration Testing (SIT)</option>
+            <option value="PVT">Production Verification Test (PVT)</option>
           </select>
           <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
             ▼
@@ -35,7 +42,7 @@ const ValidateDocument = ({
 
       {documentType && (
         <div className="mb-4 bg-gray-100 p-4 rounded-lg">
-          <h3 className="font-semibold mb-2">Validation Parameters:</h3>
+          <h3 className="font-semibold mb-2">Parameter of contents:</h3>
           <ul className="list-disc pl-5">
             {DOCUMENT_PARAMETERS[documentType].map((param) => (
               <li key={param.key} className="text-sm text-gray-700">
@@ -50,13 +57,33 @@ const ValidateDocument = ({
         <label className="block text-gray-700 font-bold mb-2">
           Upload Document
         </label>
-        <div className=" items-center justify-center w-full">
-          <label className="flex flex-col items-center px-6 py-4 bg-white text-blue-400 rounded-lg shadow-lg tracking-wide border border-blue-100 cursor-pointer hover:bg-blue-100">
-            <File className="w-8 h-8" />
-            <span className="mt-2 text-base leading-normal">
+        <div className="items-center justify-center w-full">
+          <label
+            className={`flex flex-col items-center px-6 py-4 rounded-lg shadow-lg tracking-wide border cursor-pointer ${
+              !documentType
+                ? "bg-gray-200 text-gray-400 border-gray-300" // Disable state (gray)
+                : "bg-white text-blue-400 border-blue-100 hover:bg-blue-100" // Active state
+            }`}
+          >
+            <File
+              className={`w-8 h-8 ${
+                !documentType ? "text-gray-400" : "text-blue-400" // Adjust icon color
+              }`}
+            />
+            <span
+              className={`mt-2 text-base leading-normal ${
+                !documentType ? "text-gray-400" : "text-blue-400" // Adjust text color
+              }`}
+            >
               {file ? file.name : "Select a file"}
             </span>
-            <input type="file" className="hidden" onChange={handleFileUpload} />
+            <input
+              type="file"
+              className="hidden"
+              accept=".pdf" // Optional: limit to PDF only
+              onChange={handleFileUpload}
+              disabled={!documentType} // Disable if documentType is empty
+            />
           </label>
         </div>
       </div>
@@ -67,7 +94,7 @@ const ValidateDocument = ({
           disabled={!documentType || !file}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-300"
         >
-          Start Validation
+          Start Verification
         </button>
         {file && (
           <button
@@ -111,7 +138,7 @@ const ValidateDocument = ({
                 : "bg-yellow-100 text-yellow-800"
             }`}
           >
-            Validation Complete:{" "}
+            Verification Complete:{" "}
             {validationResults.filter((r) => r.exists).length} of{" "}
             {validationResults.length} parameters found
           </div>
