@@ -2,11 +2,14 @@ import React from "react";
 
 const Navbar = () => {
   return (
-    <header className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-18 items-center">
+    <header className="bg-white shadow-md fixed top-0 left-0 right-0">
+      <div className="max-w-7xl px-6 py-4">
+        <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-4xl font-bold text-gray-500">Document Verification</span>
+            <span className="text-2xl font-bold text-gray-500">
+              Document Verification
+            </span>
+            
           </div>
         </div>
       </div>
