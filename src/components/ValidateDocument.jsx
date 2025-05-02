@@ -97,6 +97,9 @@ const ValidateDocument = ({
         >
           {isLoading ? "Verification in progress..." : "Start Verification"}
         </button>
+
+        <div className="w-10" />
+
         {file && (
           <button
             onClick={() => window.open(URL.createObjectURL(file))}
