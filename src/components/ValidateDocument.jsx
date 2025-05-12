@@ -110,9 +110,27 @@ const ValidateDocument = ({
         )}
       </div>
 
-      {validationResults && (
+      {validationResults === null ? (
+        <div className="mt-4 text-center text-gray-500">
+          No verification results yet
+          <br />
+          Please upload a document and click "Start Verification"
+        </div>
+      ) : validationResults.length === 0 ? (
+        <div className="mt-4 text-center text-yellow-600">
+          Failed
+          <br />
+          No parameters were returned from the server
+        </div>
+      ) : validationResults.every((r) => !r.exists) ? (
+        <div className="mt-4 text-center text-yellow-600">
+          Failed
+          <br />
+          Verification complete, but no document sections were found
+        </div>
+      ) : (
         <div className="mt-4">
-          <h3 className="font-semibold mb-2">Validation Results</h3>
+          <h3 className="font-semibold mb-2">Verification Results</h3>
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-200">
