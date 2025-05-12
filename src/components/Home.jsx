@@ -1,47 +1,51 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import axios from "axios";
 import ValidateDocument from "./ValidateDocument";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const DOCUMENT_PARAMETERS = {
   UAT: [
     { key: "1", name: "Cover" },
-    { key: "2", name: "Table of Content" },
-    { key: "3", name: "Introduction" },
-    { key: "4", name: "Scope Evaluation" },
-    { key: "5", name: "Plan Testing" },
-    { key: "6", name: "Rollback Test" },
-    { key: "7", name: "Budget Detail" },
-    { key: "8", name: "Result of Test" },
-    { key: "9", name: "User Feedback and Suggestion" },
-    { key: "10", name: "Summary of Testing" },
-    { key: "11", name: "Lesson Learned" },
+    { key: "2", name: "Approval" },
+    { key: "3", name: "Table of Content" },
+    { key: "4", name: "Introduction" },
+    { key: "5", name: "Scope Evaluation" },
+    { key: "6", name: "Plan Testing" },
+    { key: "7", name: "Rollback Test" },
+    { key: "8", name: "Budget Detail" },
+    { key: "9", name: "Result of Test" },
+    { key: "10", name: "User Feedback and Suggestion" },
+    { key: "11", name: "Summary of Testing" },
+    { key: "12", name: "Lesson Learned" },
   ],
 
   BRD: [
     { key: "1", name: "Cover" },
-    { key: "2", name: "Table of Content" },
-    { key: "3", name: "Introduction" },
-    { key: "4", name: "Background" },
-    { key: "5", name: "Functional Requirement" },
-    { key: "6", name: "Non Functional Requirement" },
-    { key: "7", name: "Service Characteristics" },
-    { key: "8", name: "Risk Assesment" },
-    { key: "9", name: "Roles and Responsibilities Matrix" },
+    { key: "2", name: "Approval" },
+    { key: "3", name: "Table of Content" },
+    { key: "4", name: "Introduction" },
+    { key: "5", name: "Background" },
+    { key: "6", name: "Functional Requirement" },
+    { key: "7", name: "Non Functional Requirement" },
+    { key: "8", name: "Service Characteristics" },
+    { key: "9", name: "Risk Assesment" },
+    { key: "10", name: "Roles and Responsibilities Matrix" },
   ],
 
   PVT: [
     { key: "1", name: "Cover" },
-    { key: "2", name: "Table of Content" },
-    { key: "3", name: "Introduction" },
-    { key: "4", name: "Scope" },
-    { key: "5", name: "Plan PVT" },
-    { key: "6", name: "PVT Scenario" },
-    { key: "7", name: "Performance Test" },
-    { key: "8", name: "Rollback Plan" },
-    { key: "9", name: "PVT Result" },
-    { key: "10", name: "Summary" },
+    { key: "2", name: "Approval" },
+    { key: "3", name: "Table of Content" },
+    { key: "4", name: "Introduction" },
+    { key: "5", name: "Scope" },
+    { key: "6", name: "Plan PVT" },
+    { key: "7", name: "PVT Scenario" },
+    { key: "8", name: "Performance Test" },
+    { key: "9", name: "Rollback Plan" },
+    { key: "10", name: "PVT Result" },
+    { key: "11", name: "Summary" },
   ],
 };
 
@@ -49,17 +53,17 @@ function Home() {
   const [documentType, setDocumentType] = useState("");
   const [file, setFile] = useState(null);
   const [validationResults, setValidationResults] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // State for loading animation
+  const [isLoading, setIsLoading] = useState(false);
 
   // Reset file and validation results when documentType changes
   useEffect(() => {
-    setFile(null); // Reset file when documentType changes
-    setValidationResults(null); // Reset validation results when documentType changes
+    setFile(null);
+    setValidationResults(null);
   }, [documentType]);
 
   // Reset validation results when file changes
   useEffect(() => {
-    setValidationResults(null); // Reset validation results when file changes
+    setValidationResults(null);
   }, [file]);
 
   const handleFileUpload = (event) => {
@@ -80,41 +84,39 @@ function Home() {
     formData.append("docType", documentType);
     formData.append("docFile", file);
 
-    setIsLoading(true); // Start loading animation
+    setIsLoading(true);
 
-    setTimeout(() => {
-      const results = DOCUMENT_PARAMETERS[documentType].map((param) => ({
-        ...param,
-        exists: Math.random() > 0.3,
-        pages:
-          Math.random() > 0.5
-            ? `${Math.floor(Math.random() * 10) + 1}-${
-                Math.floor(Math.random() * 20) + 10
-              }`
-            : null,
-      }));
+    // API integration here when it's available
+    try {
+      const response = await axios.post(
+        "/api/api/v1/doc-verification",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      setValidationResults(results); // Update validation results after delay
-      setIsLoading(false); // Stop loading animation
-    }, 3000); // 3 seconds delay
+      if (response.data != null) {
+        const { docType, parameters } = response.data;
 
-    // You can use the actual API integration here when it's available
-    // try {
-    //   const response = await axios.post(
-    //     "https://domainku.com/api/v1/doc-verification",
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-    // } catch (error) {
-    //   console.error("Error during API request:", error);
-    //   alert("Error during document verification.");
-    // } finally {
-    //   setIsLoading(false);
-    // }
+        const results = DOCUMENT_PARAMETERS[docType].map((param) => ({
+          ...param,
+          exists: parameters[param.key] === true,
+          pages: null, // atau bisa ditambahkan logika jika API nanti kirim data halaman
+        }));
+        setValidationResults(results);
+      } else {
+        setValidationResults([]);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      alert("Error during document verification." + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
