@@ -79,6 +79,7 @@ function Home() {
 
     const requestId = crypto.randomUUID();
     const formData = new FormData();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     formData.append("requestId", requestId);
     formData.append("docType", documentType);
@@ -89,7 +90,7 @@ function Home() {
     // API integration here when it's available
     try {
       const response = await axios.post(
-        "/api/api/v1/doc-verification",
+        `${API_BASE_URL}/api/v1/doc-verification`,
         formData,
         {
           headers: {
